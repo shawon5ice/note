@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/note_cardView"
+    app:cardCornerRadius="8dp"
+    app:cardBackgroundColor="@color/white"
+    android:layout_margin="8dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/title_TV"
+                android:text="Title"
+                android:layout_alignParentStart="true"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </TextView>
+            <ImageView
+                android:layout_width="20dp"
+                android:rotation="45"
+                android:layout_height="20dp"
+                android:id="@+id/pin_IV"
+                android:layout_alignParentEnd="true">
+            </ImageView>
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/notes_TV"
+            android:text="Notesssssssssss"
+            android:maxLines="10"
+            android:textStyle="normal"
+            android:padding="10dp"
+            android:textSize="14sp">
+        </TextView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/date_TV"
+            android:text="23/2/2222"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:textColor="@color/grey"
+            android:maxLines="10"
+            android:textStyle="normal"
+            android:padding="10dp"
+            android:textSize="14sp">
+        </TextView>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
