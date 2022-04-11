@@ -11,8 +11,10 @@ import androidx.room.RoomDatabase;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
     RecyclerView recyclerView;
     NotesListAdapter adapter;
     List<Note> notes = new ArrayList<>();
@@ -33,10 +35,12 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab_add;
     SearchView searchView;
     TextView noNotesFound;
-    boolean listView = true;
+    boolean listView = false;
+    Note selectedNote;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -46,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         noNotesFound = findViewById(R.id.no_Notes_TV);
 
         database = RoomDB.getInstance(getApplicationContext());
-        notes = database.noteDAO().getAllNotes();
+        notes = new ArrayList<>();
+        notes.addAll(database.noteDAO().getAllPinned(true));
+        notes.addAll(database.noteDAO().getAllNotes(false));
         updateRecyclerView(notes);
         if(notes.size()==0){
             noNotesFound.setVisibility(View.VISIBLE);
@@ -98,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 Note new_note = (Note) data.getSerializableExtra("note");
                 database.noteDAO().insert(new_note);
                 notes.clear();
-                notes.addAll(database.noteDAO().getAllNotes());
+                notes.addAll(database.noteDAO().getAllPinned(true));
+                notes.addAll(database.noteDAO().getAllNotes(false));
                 adapter.notifyDataSetChanged();
             }
         }
@@ -108,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 Note new_note = (Note) data.getSerializableExtra("note");
                 database.noteDAO().update(new_note.getID(),new_note.getTitle(),new_note.getNotes());
                 notes.clear();
-                notes.addAll(database.noteDAO().getAllNotes());
+                notes.addAll(database.noteDAO().getAllPinned(true));
+                notes.addAll(database.noteDAO().getAllNotes(false));
                 adapter.notifyDataSetChanged();
             }
         }
@@ -136,7 +144,43 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onLongPress(Note note, CardView cardView) {
-
+            selectedNote = new Note();
+            selectedNote = note;
+            showPopUp(cardView);
         }
     };
+
+    private void showPopUp(CardView cardView) {
+        PopupMenu popupMenu = new PopupMenu(this,cardView);
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.inflate(R.menu.long_press_popup_menu);
+        popupMenu.show();
+    }
+
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.pin:
+                if(selectedNote.isPinned()){
+                    database.noteDAO().pin(selectedNote.getID(),false);
+                }else{
+                    database.noteDAO().pin(selectedNote.getID(),true);
+                }
+                notes.clear();
+                notes.addAll(database.noteDAO().getAllPinned(true));
+                notes.addAll(database.noteDAO().getAllNotes(false));
+                adapter.notifyDataSetChanged();
+                return  true;
+
+            case R.id.deleteNote:
+                database.noteDAO().delete(selectedNote);
+                notes.clear();
+                notes.addAll(database.noteDAO().getAllPinned(true));
+                notes.addAll(database.noteDAO().getAllNotes(false));
+                adapter.notifyDataSetChanged();
+                return true;
+        }
+        return false;
+    }
 }
