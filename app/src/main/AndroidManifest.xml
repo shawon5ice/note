@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Notes">
         <activity
+            android:theme="@style/Theme.Notes.NoActionBar"
             android:name=".AddNoteActivity"
             android:exported="false" />
         <activity

@@ -1,11 +1,13 @@
 package com.ssquare.notes;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.room.RoomDatabase;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -48,6 +50,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 101){
+            if(resultCode== Activity.RESULT_OK){
+                Note new_note = (Note) data.getSerializableExtra("note");
+                database.noteDAO().insert(new_note);
+                notes.clear();
+                notes.addAll(database.noteDAO().getAllNotes());
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        if(requestCode == 102){
+            if(resultCode == Activity.RESULT_OK){
+                Note new_note = (Note) data.getSerializableExtra("note");
+                database.noteDAO().update(new_note.getID(),new_note.getTitle(),new_note.getNotes());
+                notes.clear();
+                notes.addAll(database.noteDAO().getAllNotes());
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
+
     private void updateRecyclerView(List<Note> notes) {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayout.VERTICAL));
@@ -60,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
     private final NotesClickListener notesClickListener = new NotesClickListener() {
         @Override
         public void onPress(Note note) {
-
+            Intent intent = new Intent(MainActivity.this,AddNoteActivity.class);
+            intent.putExtra("old_note",note);
+            startActivityForResult(intent,102);
         }
 
         @Override
