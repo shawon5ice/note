@@ -2,6 +2,7 @@ package com.ssquare.notes;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -12,14 +13,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ssquare.notes.Adapters.NotesListAdapter;
 import com.ssquare.notes.DataBase.RoomDB;
 import com.ssquare.notes.Models.Note;
+import com.ssquare.notes.databinding.ActivityAddNoteBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -27,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     List<Note> notes = new ArrayList<>();
     RoomDB database;
     FloatingActionButton fab_add;
+    SearchView searchView;
+    TextView noNotesFound;
+    boolean listView = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +42,17 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recycler_homePage);
         fab_add = findViewById(R.id.fab_add);
+        searchView = findViewById(R.id.searchView_Home);
+        noNotesFound = findViewById(R.id.no_Notes_TV);
 
         database = RoomDB.getInstance(getApplicationContext());
         notes = database.noteDAO().getAllNotes();
         updateRecyclerView(notes);
+        if(notes.size()==0){
+            noNotesFound.setVisibility(View.VISIBLE);
+        }else{
+
+        }
 
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,6 +62,32 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText);
+                return false;
+            }
+        });
+    }
+
+    private void filter(String newText) {
+        List<Note> filterNotes = new ArrayList<>();
+        for(Note singleNote: notes){
+            if(singleNote.getTitle().toLowerCase().contains(newText.toLowerCase())
+            ||singleNote.getNotes().toLowerCase().contains(newText.toLowerCase())
+            ||singleNote.getDate().toLowerCase().contains(newText.toLowerCase())){
+                filterNotes.add(singleNote);
+            }
+        }
+        adapter.filteredList(filterNotes);
     }
 
     @Override
@@ -75,10 +115,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateRecyclerView(List<Note> notes) {
+        if(notes.size()>0){
+            noNotesFound.setVisibility(View.INVISIBLE);
+        }
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayout.VERTICAL));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(listView?1:2, LinearLayout.VERTICAL));
 
-        adapter = new NotesListAdapter(notes,notesClickListener,MainActivity.this);
+        adapter = new NotesListAdapter(notes,notesClickListener,MainActivity.this,listView);
         recyclerView.setAdapter(adapter);
 
     }

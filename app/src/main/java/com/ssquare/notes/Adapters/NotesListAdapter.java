@@ -24,17 +24,19 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder>{
     List<Note> notes;
     NotesClickListener notesClickListener;
     Context context;
+    boolean listView;
 
-    public NotesListAdapter(List<Note> notes, NotesClickListener notesClickListener, Context context) {
+    public NotesListAdapter(List<Note> notes, NotesClickListener notesClickListener, Context context,boolean listView) {
         this.notes = notes;
         this.notesClickListener = notesClickListener;
         this.context = context;
+        this.listView = listView;
     }
 
     @NonNull
     @Override
     public NotesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new NotesViewHolder(LayoutInflater.from(context).inflate(R.layout.single_note,parent,false));
+        return new NotesViewHolder(LayoutInflater.from(context).inflate(R.layout.single_note,parent,false),listView);
     }
 
     @Override
@@ -92,6 +94,10 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder>{
         return notes.size();
     }
 
+    public void filteredList(List<Note> filteredNotes){
+        notes = filteredNotes;
+        notifyDataSetChanged();
+    }
 
 }
 
@@ -99,12 +105,15 @@ class NotesViewHolder extends RecyclerView.ViewHolder {
     CardView notes_cardView;
     TextView title_TV,notes_TV,date_TV;
     ImageView pin_IV;
-    public NotesViewHolder(@NonNull View itemView) {
+    public NotesViewHolder(@NonNull View itemView, boolean listView) {
         super(itemView);
         notes_cardView = itemView.findViewById(R.id.note_cardView);
         title_TV = itemView.findViewById(R.id.title_TV);
         notes_TV = itemView.findViewById(R.id.notes_TV);
         date_TV = itemView.findViewById(R.id.date_TV);
         pin_IV = itemView.findViewById(R.id.pin_IV);
+        if(listView){
+            notes_TV.setMaxLines(1);
+        }
     }
 }

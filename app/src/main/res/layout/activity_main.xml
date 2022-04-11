@@ -5,10 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
+    tools:viewBindingIgnore="true"
     tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView_Home"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        app:queryHint="Search Notes.."
+        app:iconifiedByDefault="false"
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_homePage"
+        android:layout_below="@+id/searchView_Home"
         android:layout_width="match_parent"
         android:layout_margin="4dp"
         android:layout_height="match_parent">
@@ -23,4 +35,14 @@
         android:layout_alignParentEnd="true"
         android:layout_height="wrap_content">
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    <TextView
+        android:id="@+id/no_Notes_TV"
+        android:layout_centerInParent="true"
+        android:text="You don't have any notes"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </TextView>
 </RelativeLayout>

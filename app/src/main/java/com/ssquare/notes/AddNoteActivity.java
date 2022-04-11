@@ -11,12 +11,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ssquare.notes.Models.Note;
+import com.ssquare.notes.databinding.ActivityAddNoteBinding;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AddNoteActivity extends AppCompatActivity {
+    private ActivityAddNoteBinding binding;
 
     EditText ET_title,ET_notes;
     ImageView save;
@@ -25,11 +27,13 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_note);
+        binding = ActivityAddNoteBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
-        save = findViewById(R.id.save_IV);
-        ET_title = findViewById(R.id.editText_title);
-        ET_notes = findViewById(R.id.editText_notes);
+        save = view.findViewById(R.id.save_IV);
+        ET_title = view.findViewById(R.id.editText_title);
+        ET_notes = view.findViewById(R.id.editText_notes);
 
         note = new Note();
 
