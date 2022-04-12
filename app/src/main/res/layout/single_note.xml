@@ -5,7 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/note_cardView"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="20dp"
+    android:outlineAmbientShadowColor="@color/grey1"
+
     app:cardBackgroundColor="@color/white"
     android:layout_margin="4dp"
     tools:viewBindingIgnore="true"

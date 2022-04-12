@@ -58,7 +58,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder>{
         holder.title_TV.setText(notes.get(position).getTitle());
 
         int color_code = getRandomColor();
-        holder.notes_cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(color_code,null));
+//        holder.notes_cardView.setCardBackgroundColor(holder.itemView.getResources().getColor(color_code,null));
 
         holder.notes_cardView.setOnClickListener(new View.OnClickListener() {
             @Override
