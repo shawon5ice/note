@@ -9,20 +9,24 @@
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:layout_alignParentTop="true"
         android:id="@+id/tool_bar_home"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <androidx.constraintlayout.utils.widget.ImageFilterView
+
+            <ImageView
+                android:id="@+id/main_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="20dp"
-                android:src="@drawable/ic_more_day">
-            </androidx.constraintlayout.utils.widget.ImageFilterView>
+                android:clickable="true"
+                android:src="@drawable/ic_list_day">
+            </ImageView>
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
@@ -62,10 +66,11 @@
         android:id="@+id/no_Notes_TV"
         android:layout_centerInParent="true"
         android:text="You don't have any notes"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </TextView>
+
 </RelativeLayout>

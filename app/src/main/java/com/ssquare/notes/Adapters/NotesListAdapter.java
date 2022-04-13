@@ -41,7 +41,8 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull NotesViewHolder holder, int position) {
-        holder.title_TV.setText(notes.get(position).getTitle());
+        String title = notes.get(position).getTitle();
+        holder.title_TV.setText(title.length()==0?"No title given":title);
         holder.title_TV.setSelected(true);
 
         holder.notes_TV.setText(notes.get(position).getNotes());

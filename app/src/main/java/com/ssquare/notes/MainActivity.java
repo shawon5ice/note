@@ -9,19 +9,23 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.room.RoomDatabase;
 
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ssquare.notes.Adapters.NotesListAdapter;
 import com.ssquare.notes.DataBase.RoomDB;
 import com.ssquare.notes.Models.Note;
-import com.ssquare.notes.databinding.ActivityAddNoteBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     TextView noNotesFound;
     boolean listView = false;
     Note selectedNote;
+    ImageView mainMenu;
+    private UiModeManager uiModeManager;
+
+    private Menu menu;
+    private String gridOn = "Set to 'Grid View'";
+    private String gridOff = "Set to 'List View'";
+    private boolean isGrid = true;
 
 
     @Override
@@ -48,17 +59,29 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         fab_add = findViewById(R.id.fab_add);
         searchView = findViewById(R.id.searchView_Home);
         noNotesFound = findViewById(R.id.no_Notes_TV);
+        mainMenu = findViewById(R.id.main_menu);
+
+        uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+
+        mainMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!listView){
+                    listView = true;
+                    mainMenu.setImageDrawable(getDrawable(R.drawable.ic_grid_day));
+                }else{
+                    mainMenu.setImageDrawable(getDrawable(R.drawable.ic_list_day));
+                    listView = false;
+                }
+                updateRecyclerView(notes);
+            }
+        });
 
         database = RoomDB.getInstance(getApplicationContext());
         notes = new ArrayList<>();
         notes.addAll(database.noteDAO().getAllPinned(true));
         notes.addAll(database.noteDAO().getAllNotes(false));
         updateRecyclerView(notes);
-        if(notes.size()==0){
-            noNotesFound.setVisibility(View.VISIBLE);
-        }else{
-
-        }
 
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 filterNotes.add(singleNote);
             }
         }
-        adapter.filteredList(filterNotes);
+        updateRecyclerView(filterNotes);
     }
 
     @Override
@@ -106,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                adapter.notifyDataSetChanged();
+                updateRecyclerView(notes);
             }
         }
 
@@ -117,13 +140,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                adapter.notifyDataSetChanged();
+                updateRecyclerView(notes);
             }
         }
     }
 
     private void updateRecyclerView(List<Note> notes) {
-        if(notes.size()>0){
+        if(notes.size()==0){
+            noNotesFound.setVisibility(View.VISIBLE);
+        }else{
             noNotesFound.setVisibility(View.INVISIBLE);
         }
         recyclerView.setHasFixedSize(true);
@@ -170,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                adapter.notifyDataSetChanged();
+                updateRecyclerView(notes);
                 return  true;
 
             case R.id.deleteNote:
@@ -178,9 +203,30 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                adapter.notifyDataSetChanged();
+                updateRecyclerView(notes);
                 return true;
         }
         return false;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.gridView);
+        if (isGrid) {
+            item.setTitle("Set to 'Grid'");
+            isGrid = false;
+        } else {
+            item.setTitle("Set to 'List'");
+            isGrid = true;
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
 }

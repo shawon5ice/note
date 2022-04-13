@@ -1,48 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:weightSum="10"
     tools:context=".AddNoteActivity">
     <Toolbar
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/back_IV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_back">
+            </ImageView>
             <ImageView
                 android:id="@+id/save_IV"
-                android:src="@drawable/ic_save"
-                android:padding="8dp"
-                android:background="@android:color/transparent"
-                android:layout_alignParentEnd="true"
                 android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize">
-            </ImageView>
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignParentEnd="true"
+                android:background="@android:color/transparent"
+                android:padding="16dp"
+                android:src="@drawable/ic_baseline_done_24"></ImageView>
         </RelativeLayout>
     </Toolbar>
-    <EditText
-        android:id="@+id/editText_title"
-        android:padding="8dp"
-        android:hint="Title"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:singleLine="true"
+    <LinearLayout
+        android:padding="20dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </EditText>
-    <EditText
-        android:id="@+id/editText_notes"
-        android:padding="8dp"
-        android:hint="Add Notes"
-        android:textColor="@color/white"
-        android:textStyle="normal"
-        android:textSize="18sp"
-        android:singleLine="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </EditText>
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/displayChars"
+            android:textColor="#80000000"
+            android:text="11 April 22:07 | 22 characters"
+            android:layout_width="match_parent"
+            android:textSize="12dp"
+            android:layout_height="wrap_content">
+        </TextView>
+        <EditText
+            android:id="@+id/editText_title"
+            android:paddingTop="8dp"
+            android:hint="Title"
+            android:background="@null"
+            android:backgroundTint="@android:color/transparent"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </EditText>
+
+        <ScrollView
+            android:layout_weight="8"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <EditText
+                android:hint="Description"
+                android:background="@null"
+                android:backgroundTint="@android:color/transparent"
+                android:id="@+id/editText_notes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elegantTextHeight="true"
+                android:inputType="textCapSentences|textMultiLine"
+                android:textSize="18sp"
+                android:textStyle="normal">
+            </EditText>
+        </ScrollView>
+    </LinearLayout>
 </LinearLayout>
