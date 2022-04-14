@@ -46,18 +46,21 @@ public class AddNoteActivity extends AppCompatActivity {
         ET_title = view.findViewById(R.id.editText_title);
         ET_notes = view.findViewById(R.id.editText_notes);
 
-        displayChars.setText(displayDate+" | 0 characters");
+        int length = 0;
         note = new Note();
 
         try {
             note = (Note) getIntent().getSerializableExtra("old_note");
             ET_title.setText(note.getTitle());
             ET_notes.setText(note.getNotes());
+            length = ET_title.getText().toString().replace(" ","").length() +
+                    ET_notes.getText().toString().replace(" ","").length();
             isOldNote = true;
         }catch (Exception e){
             e.printStackTrace();
         }
 
+        displayChars.setText(displayDate+" | "+length+" characters");
         ET_title.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -102,6 +105,10 @@ public class AddNoteActivity extends AppCompatActivity {
         back_IV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(ET_notes.getText().toString().length()==0 && ET_title.getText().toString().length()==0){
+                    finish();
+                    return;
+                }
                 saveData();
             }
         });
@@ -139,6 +146,10 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if(ET_notes.getText().toString().length()==0 && ET_title.getText().toString().length()==0){
+            finish();
+            return;
+        }
         saveData();
     }
 }

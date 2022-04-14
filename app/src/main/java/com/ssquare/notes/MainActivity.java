@@ -10,7 +10,9 @@ import androidx.room.RoomDatabase;
 
 import android.app.Activity;
 import android.app.UiModeManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -39,15 +41,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     FloatingActionButton fab_add;
     SearchView searchView;
     TextView noNotesFound;
-    boolean listView = false;
+    boolean listView;
     Note selectedNote;
     ImageView mainMenu;
     private UiModeManager uiModeManager;
 
-    private Menu menu;
-    private String gridOn = "Set to 'Grid View'";
-    private String gridOff = "Set to 'List View'";
-    private boolean isGrid = true;
+    private static String LIST_VIEW_KEY = "LIST_VIEW";
+
 
 
     @Override
@@ -61,19 +61,29 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         noNotesFound = findViewById(R.id.no_Notes_TV);
         mainMenu = findViewById(R.id.main_menu);
 
+
+        SharedPreferences sharedPref = MainActivity.this.getPreferences(Context.MODE_PRIVATE);
+
+        listView = sharedPref.getBoolean(LIST_VIEW_KEY,false);
+
+
         uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
 
         mainMenu.setOnClickListener(new View.OnClickListener() {
+            SharedPreferences.Editor editor = sharedPref.edit();
             @Override
             public void onClick(View view) {
                 if(!listView){
                     listView = true;
+                    editor.putBoolean(LIST_VIEW_KEY,true).commit();
                     mainMenu.setImageDrawable(getDrawable(R.drawable.ic_grid_day));
                 }else{
+                    editor.putBoolean(LIST_VIEW_KEY,false).commit();
                     mainMenu.setImageDrawable(getDrawable(R.drawable.ic_list_day));
                     listView = false;
                 }
-                updateRecyclerView(notes);
+                System.out.println(sharedPref.getBoolean(LIST_VIEW_KEY,false));
+                updateRecyclerView(notes,false);
             }
         });
 
@@ -81,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         notes = new ArrayList<>();
         notes.addAll(database.noteDAO().getAllPinned(true));
         notes.addAll(database.noteDAO().getAllNotes(false));
-        updateRecyclerView(notes);
+        updateRecyclerView(notes,false);
 
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 filterNotes.add(singleNote);
             }
         }
-        updateRecyclerView(filterNotes);
+        updateRecyclerView(filterNotes,true);
     }
 
     @Override
@@ -129,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                updateRecyclerView(notes);
+                updateRecyclerView(notes,false);
             }
         }
 
@@ -140,18 +150,29 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                updateRecyclerView(notes);
+                updateRecyclerView(notes,false);
             }
         }
     }
 
-    private void updateRecyclerView(List<Note> notes) {
-        if(notes.size()==0){
-            noNotesFound.setVisibility(View.VISIBLE);
+    private void updateRecyclerView(List<Note> notes,boolean fromFilter) {
+        if(!fromFilter){
+            if(notes.size()==0){
+                noNotesFound.setVisibility(View.VISIBLE);
+            }else {
+                noNotesFound.setVisibility(View.INVISIBLE);
+            }
+
         }else{
-            noNotesFound.setVisibility(View.INVISIBLE);
+            if(notes.size()==0){
+                noNotesFound.setText("No results found based on your query");
+                noNotesFound.setVisibility(View.VISIBLE);
+            }else {
+                noNotesFound.setVisibility(View.INVISIBLE);
+            }
         }
         recyclerView.setHasFixedSize(true);
+        Log.i("listView","LIST:"+listView);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(listView?1:2, LinearLayout.VERTICAL));
 
         adapter = new NotesListAdapter(notes,notesClickListener,MainActivity.this,listView);
@@ -195,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                updateRecyclerView(notes);
+                updateRecyclerView(notes,false);
                 return  true;
 
             case R.id.deleteNote:
@@ -203,30 +224,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 notes.clear();
                 notes.addAll(database.noteDAO().getAllPinned(true));
                 notes.addAll(database.noteDAO().getAllNotes(false));
-                updateRecyclerView(notes);
+                updateRecyclerView(notes,false);
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        this.menu = menu;
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.gridView);
-        if (isGrid) {
-            item.setTitle("Set to 'Grid'");
-            isGrid = false;
-        } else {
-            item.setTitle("Set to 'List'");
-            isGrid = true;
-        }
-        return super.onPrepareOptionsMenu(menu);
     }
 
 }
