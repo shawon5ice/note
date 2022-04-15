@@ -1,5 +1,5 @@
 # note
-A simple note taking android native application.
+A minimalist note taking android native application.
 
 ## Features
 1. Store notes locally.
